@@ -29,8 +29,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN npm install -g typescript ts-node nodemon
 
-COPY ./nvim /root/.config/nvim
-
 RUN curl -Lo install.sh https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
     && CHSH=no RUNZSH=no bash install.sh \
     && rm install.sh \
