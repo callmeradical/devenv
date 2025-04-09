@@ -15,8 +15,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     locales \
     lsof \
-    nodejs \
-    npm \
     python3 \
     python3-pip \
     ripgrep \
@@ -26,8 +24,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN npm install -g typescript ts-node nodemon
 
 RUN curl -Lo install.sh https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
     && CHSH=no RUNZSH=no bash install.sh \
