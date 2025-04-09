@@ -43,6 +43,6 @@ jobs:
       - name: Trigger Node Dev Container Rebuild
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN}}
           repository: callmeradical/devenv
           event-type: rebuild-node
