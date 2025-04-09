@@ -1,0 +1,29 @@
+name: Build and Push Node Dev Container
+
+on:
+  repository_dispatch:
+    types: [rebuild-node]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Node Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: callmeradical/devenv:node

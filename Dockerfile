@@ -1,50 +1,24 @@
-FROM debian:bookworm-slim
+FROM callmeradical/devenv:latest
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    ca-certificates \
-    curl \
-    fd-find \
-    git \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    locales \
-    lsof \
-    nodejs \
-    npm \
-    python3 \
-    python3-pip \
-    ripgrep \
-    screen \
-    sudo \
-    zsh \
-    && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
-    && locale-gen \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install NVM, Node.js (via NVM), and Global Packages
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+    && export NVM_DIR="$HOME/.nvm" \
+    && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" \
+    && nvm install 20 \
+    && nvm use 20 \
+    && nvm alias default 20 \
+    && npm install -g typescript ts-node nodemon \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g typescript ts-node nodemon
-
-RUN curl -Lo install.sh https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
-    && CHSH=no RUNZSH=no bash install.sh \
-    && rm install.sh \
-    && curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-arm64.appimage \
-    && chmod u+x nvim-linux-arm64.appimage \
-    && ./nvim-linux-arm64.appimage --appimage-extract \
-    && mkdir -p /opt/nvim \
-    && mv squashfs-root/* /opt/nvim/ \
-    && rm nvim-linux-arm64.appimage \
-    && ln -s /opt/nvim/usr/bin/nvim /usr/local/bin/nvim \
-    && ln -s /usr/local/bin/nvim /usr/local/bin/vim
-
-RUN chsh -s $(which zsh) root \
-    && sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/' /root/.zshrc \
-    && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
-    && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+# Load NVM automatically in every shell
+RUN echo 'export NVM_DIR="$HOME/.nvm"' >> /root/.zshrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /root/.zshrc
 
 WORKDIR /workspace
 
