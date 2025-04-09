@@ -1,6 +1,9 @@
 name: Build and Push Node Dev Container
 
 on:
+  push:
+    branches:
+      - node
   repository_dispatch:
     types: [rebuild-node]
 
