@@ -37,7 +37,7 @@ jobs:
 
   trigger-specialized-builds:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - name: Trigger Node Dev Container Rebuild
