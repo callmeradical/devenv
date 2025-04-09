@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build:
     runs-on: ubuntu-24.04-arm
@@ -33,11 +37,12 @@ jobs:
 
   trigger-specialized-builds:
     needs: build
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
 
     steps:
       - name: Trigger Node Dev Container Rebuild
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          repository: callmeradical/devenv
           event-type: rebuild-node
