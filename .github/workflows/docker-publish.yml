@@ -44,5 +44,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PAT_TOKEN}}
-          repository: callmeradical/devenv
+          repository: callmeradical/devenv:node
           event-type: rebuild-node
