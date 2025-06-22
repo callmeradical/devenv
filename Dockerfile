@@ -20,14 +20,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-venv \
   python3-setuptools \
   python3-wheel \
+  pipx \
   ripgrep \
   screen \
   zsh \
-  && pip3 install --no-cache-dir pynvim \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# After base packages are installed
-RUN pip3 install --no-cache-dir pynvim
+
+RUN pip install pynvim --break-system-packages
 
 RUN curl -Lo install.sh https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
     && CHSH=no RUNZSH=no bash install.sh \
