@@ -25,6 +25,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && locale-gen \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# After base packages are installed
+RUN pip3 install --no-cache-dir pynvim
+
 RUN curl -Lo install.sh https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
     && CHSH=no RUNZSH=no bash install.sh \
     && rm install.sh \
