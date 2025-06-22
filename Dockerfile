@@ -6,24 +6,25 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LC_ALL=en_US.UTF-8
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    ca-certificates \
-    curl \
-    fd-find \
-    git \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    locales \
-    lsof \
-    python3 \
-    python3-pip \
-    ripgrep \
-    screen \
-    sudo \
-    zsh \
-    && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
-    && locale-gen \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+  build-essential \
+  ca-certificates \
+  curl \
+  fd-find \
+  git \
+  libcurl4-openssl-dev \
+  libssl-dev \
+  locales \
+  lsof \
+  python3 \
+  python3-pip \
+  python3-venv \
+  python3-setuptools \
+  python3-wheel \
+  ripgrep \
+  screen \
+  zsh \
+  && pip3 install --no-cache-dir pynvim \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # After base packages are installed
 RUN pip3 install --no-cache-dir pynvim
