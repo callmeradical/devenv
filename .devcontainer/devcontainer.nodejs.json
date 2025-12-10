@@ -1,0 +1,28 @@
+{
+  "name": "Node.js Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
+  
+  "features": {
+    "./features/base-tools": {},
+    "./features/nodejs": {
+      "version": "20"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      },
+      "extensions": [
+        "ms-vscode.vscode-typescript-next"
+      ]
+    }
+  },
+
+  "postCreateCommand": "echo 'Node.js dev container is ready!'",
+  
+  "remoteUser": "vscode",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace"
+}

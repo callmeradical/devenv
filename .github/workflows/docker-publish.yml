@@ -1,18 +1,20 @@
-name: Build and Push Base Dev Container
+name: Build and Push Dev Containers
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
-  actions: write
+  packages: write
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04-arm
-
+  build-base:
+    name: Build Base Dev Container
+    runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,23 +28,90 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Base Image
-        uses: docker/build-push-action@v5
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          context: .
-          push: true
-          tags: |
-            callmeradical/devenv:latest
-            callmeradical/devenv:${{ github.sha }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  trigger-specialized-builds:
-    needs: build
-    runs-on: ubuntu-24.04-arm
+      - name: Install Dev Container CLI
+        run: npm install -g @devcontainers/cli
 
+      - name: Build Base Dev Container
+        run: |
+          # Reset to base configuration
+          echo '{
+            "name": "Base Development Environment",
+            "image": "mcr.microsoft.com/devcontainers/base:debian",
+            "features": {
+              "./features/base-tools": {}
+            },
+            "customizations": {
+              "vscode": {
+                "settings": {
+                  "terminal.integrated.defaultProfile.linux": "zsh"
+                },
+                "extensions": []
+              }
+            },
+            "postCreateCommand": "echo '"'"'Base dev container is ready!'"'"'",
+            "remoteUser": "vscode",
+            "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+            "workspaceFolder": "/workspace"
+          }' > .devcontainer/devcontainer.json
+          
+          devcontainer build --workspace-folder . \
+            --image-name ghcr.io/${{ github.repository_owner }}/devenv:base \
+            --image-name ghcr.io/${{ github.repository_owner }}/devenv:base-${{ github.sha }} \
+            --image-name callmeradical/devenv:base \
+            --image-name callmeradical/devenv:latest
+
+      - name: Push Base Images
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/devenv:base
+          docker push ghcr.io/${{ github.repository_owner }}/devenv:base-${{ github.sha }}
+          docker push callmeradical/devenv:base
+          docker push callmeradical/devenv:latest
+
+  build-nodejs:
+    name: Build Node.js Dev Container
+    runs-on: ubuntu-latest
+    
     steps:
-      - name: Trigger Node Dev Container Rebuild
-        uses: peter-evans/repository-dispatch@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
         with:
-          token: ${{ secrets.PAT_TOKEN}}
-          repository: callmeradical/devenv
-          event-type: rebuild-node
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Dev Container CLI
+        run: npm install -g @devcontainers/cli
+
+      - name: Build Node.js Dev Container
+        run: |
+          cp .devcontainer/devcontainer.nodejs.json .devcontainer/devcontainer.json
+          
+          devcontainer build --workspace-folder . \
+            --image-name ghcr.io/${{ github.repository_owner }}/devenv:nodejs \
+            --image-name ghcr.io/${{ github.repository_owner }}/devenv:nodejs-${{ github.sha }} \
+            --image-name callmeradical/devenv:nodejs
+
+      - name: Push Node.js Images
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/devenv:nodejs
+          docker push ghcr.io/${{ github.repository_owner }}/devenv:nodejs-${{ github.sha }}
+          docker push callmeradical/devenv:nodejs

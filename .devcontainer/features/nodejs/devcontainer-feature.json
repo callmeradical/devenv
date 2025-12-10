@@ -1,0 +1,13 @@
+{
+    "id": "nodejs",
+    "version": "1.0.0",
+    "name": "Node.js Development Environment",
+    "description": "Install Node.js via NVM with TypeScript and development tools",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "20",
+            "description": "Node.js version to install"
+        }
+    }
+}

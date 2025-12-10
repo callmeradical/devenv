@@ -1,0 +1,18 @@
+{
+    "id": "base-tools",
+    "version": "1.0.0",
+    "name": "Base Development Tools",
+    "description": "Essential development tools including git, curl, neovim, zsh, tmux, and dotfiles from callmeradical/dotfiles",
+    "options": {
+        "installDotfiles": {
+            "type": "boolean",
+            "default": true,
+            "description": "Install dotfiles from callmeradical/dotfiles"
+        },
+        "dotfilesRepo": {
+            "type": "string",
+            "default": "https://github.com/callmeradical/dotfiles.git",
+            "description": "Git repository URL for dotfiles"
+        }
+    }
+}
